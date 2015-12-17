@@ -182,6 +182,71 @@ public class Pomodoro {
         }
     }
 
+    public static void timer(String name, ArrayList data) {
+        String temp = "";
+        for (int i = 0; i < data.size(); i++) {                //Takes each list and extracts title
+            String z = data.get(i).toString();
+            String x = data.get(i).toString().replace("[", "");
+            int count = x.indexOf(",") - 1;
+            String newtemp = "";
+            for (int y = 0; y <= count; y++) {
+                newtemp += x.charAt(y);
+            }
+            if (!newtemp.equals(name)) {    //checks extracted title against name and then adds it back to a string if
+                temp = temp + z;            // if not edited list
+                temp = temp + "  ";
+            } else if (newtemp.equals(name)) { // if title is edited list, the number value is extracted and stored
+                String edittime = "";
+                for (int ab = count + 2; ab <= x.length() - 2; ab++) {
+                    edittime += x.charAt(ab);
+                }
+
+                // 4 Pomodoras for 25 mins, 3 5 min breaks, then 1 15 min break
+                while (1 != 100) {    //placeholder to keep it going
+                    int timercount = 4;
+                    boolean breakcounter = true;   // Will switch on and off to stimulate break timer
+                    if (timercount > 1) {
+                        Timer t = new Timer();                   // need to put in Timer.cancel() somewhere
+                        t.schedule(new TimerTask() {             //need to store total timer somehow
+
+                            @Override
+                            public void run() {
+                                System.out.println("You now have a 5 min break");
+
+                            }
+                        }, 1500000);
+                        timercount = timercount - 1;
+                    } else {
+                        Timer t = new Timer();
+                        t.schedule(new TimerTask() {
+
+                            @Override
+                            public void run() {
+                                System.out.println("You now have a 25 min break");
+
+                            }
+                        }, 1500000);
+                    }
+
+                    name = "[" + name + "," + edittime + "]  ";   // final value before interupt is formatted and added to name
+                    temp = temp + name;                            // then added to another string for storage
+
+                }
+            }
+
+            try {
+                FileWriter fw = new FileWriter("src/projectlist.txt");    // new string is written to file
+                String tempfile = "";
+                tempfile = tempfile + temp;
+
+                fw.write(tempfile);
+                fw.close();
+            } catch (IOException p) {
+
+            }
+        }
+    }
+
     public static void interfaceConsole() {
         System.out.print("Welcome to Pomodoro Generator!");  //Initial Prompts
         System.out.println("");
@@ -248,6 +313,7 @@ public class Pomodoro {
             else if (cn == 3) {
                 System.out.println("");
                 System.out.println("Start Timer");
+                timer(projName, chooseProject());
                 System.out.println("");
                 interfaceConsole();
             }
